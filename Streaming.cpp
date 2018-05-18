@@ -34,8 +34,7 @@
 std::vector<std::string> SoapyAirspyHF::getStreamFormats(const int direction, const size_t channel) const {
     std::vector<std::string> formats;
 
-    // formats.push_back("CS8");
-    //formats.push_back(SOAPY_SDR_CS16);
+    formats.push_back(SOAPY_SDR_CS16);
     formats.push_back(SOAPY_SDR_CF32);
 
     return formats;
@@ -135,22 +134,22 @@ SoapySDR::Stream *SoapyAirspyHF::setupStream(
         throw std::runtime_error("setupStream invalid channel selection");
     }
 
-    //airspy_sample_type asFormat = AIRSPY_SAMPLE_INT16_IQ;
+    airspyhf_sample_type_t asFormat = AIRSPYHF_SAMPLE_INT16_IQ;
 
     //check the format
     if (format == SOAPY_SDR_CF32) {
         SoapySDR_log(SOAPY_SDR_INFO, "Using format CF32.");
-        //asFormat = AIRSPY_SAMPLE_FLOAT32_IQ;
-    //} else if (format == SOAPY_SDR_CS16) {
-       // SoapySDR_log(SOAPY_SDR_INFO, "Using format CS16.");
-       // asFormat = AIRSPY_SAMPLE_INT16_IQ;
+        asFormat = AIRSPYHF_SAMPLE_FLOAT32_IQ;
+    } else if (format == SOAPY_SDR_CS16) {
+        SoapySDR_log(SOAPY_SDR_INFO, "Using format CS16.");
+        asFormat = AIRSPYHF_SAMPLE_INT16_IQ;
     } else {
         throw std::runtime_error(
                 "setupStream invalid format '" + format
-                        + "' -- Only CF32 is supported by SoapyAirspyHF module.");
+                        + "' -- Only CF32 or CS16 is supported by SoapyAirspyHF module.");
     }
 
-    //airspy_set_sample_type(dev, asFormat);
+    airspyhf_set_sample_type(dev, asFormat);
     sampleRateChanged.store(true);
 
     bytesPerSample = SoapySDR::formatToSize(format);
